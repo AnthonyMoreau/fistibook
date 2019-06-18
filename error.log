@@ -1,0 +1,2 @@
+[Tue Jun 18 11:56:46.731988 2019] [php7:error] [pid 4295] [client 127.0.0.1:43222] script '/home/dev1/code/fistibook/app/index.php' not found or unable to stat, referer: http://fistibook/
+[Tue Jun 18 11:57:14.056802 2019] [php7:error] [pid 4291] [client 127.0.0.1:43226] script '/home/dev1/code/fistibook/app/index.php' not found or unable to stat, referer: http://fistibook/

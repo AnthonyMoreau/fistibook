@@ -1,13 +1,22 @@
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Fistibook</title>
-</head>
-<body>
-    <h1>FISTIBOOK</h1>
-    <h2>Au fond du fun !</h2>
-</body>
-</html>
+<?php 
+
+    if(isset($_GET["page"])){
+        
+        $page = $_GET["page"];
+
+    } else {
+        $page = "home";
+    }
+
+    if($page == "home"){
+        require "pages/home.php";
+    }
+
+    elseif ($page == "contact"){
+        require "pages/contact.php";
+        
+    } else {
+        require "pages/home.php";
+    }
+
+?>

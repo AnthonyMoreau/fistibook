@@ -1,17 +1,44 @@
-<?php 
-    $db_name = "fistibook";
-    $db_host = "127.0.0.1";
-    $db_admin = "admin";
-    $db_pass = "plop";
+<?php
+    require "app/pdo.php";
 
-    $pdo = new PDO("mysql:dbname={$db_name};host={$db_host}", $db_admin, $db_pass);
-    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-    $pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_OBJ);
+    $_SESSION['errors'] = [];
+    $pattern = "/[A-Za-zéàèçêiôûëïö0-9]+/";
 
-    if(isset($_POST['name'])){
-        $req = $pdo->prepare("INSERT INTO users SET name= ?, first_name= ?, birth_date= ?, sexe= ?, city= ?, email= ?, phone= ?");
-        $req->execute([$_POST['name'], $_POST['first_name'], $_POST['age'],$_POST['sexe'], $_POST['ville'],$_POST['mail'], $_POST['tel']]);
-        var_dump($pdo);
+    if(!empty($_POST)){
+
+        if( !empty($_POST['name']) and 
+            !empty($_POST['first_name']) and 
+            !empty($_POST['age']) and 
+            !empty($_POST['ville']) and 
+            !empty($_POST['tel'])and 
+            !empty($_POST['mail']) and 
+            !empty($_POST['pass']) and 
+            !empty($_POST['sexe'])){
+
+            // on verifie les caracteres spéciaux dans les noms propres
+            preg_match($pattern, $_POST['name'], $match_name);
+            preg_match($pattern, $_POST['first_name'], $match_first_name);
+            preg_match($pattern, $_POST['ville'], $match_ville);
+
+            if( filter_var($_POST['mail'], FILTER_VALIDATE_EMAIL) 
+                and $_POST['name'] == $match_name 
+                and $_POST['first_name'] == $match_first_name 
+                and $_POST['ville'] == $match_ville){
+
+                // on entre l'utilisateur dans la base de donnée
+                $req = $pdo->prepare("INSERT INTO users SET name= ?, first_name= ?, birth_date= ?, sexe= ?, city= ?, email= ?, phone= ?");
+                $req->execute([$_POST['name'], $_POST['first_name'], $_POST['age'],$_POST['sexe'], $_POST['ville'],$_POST['mail'], $_POST['tel']]);
+            
+            } else {
+
+                $_SESSION['errors'][] = "Votre Email ou votre nom ne semblent pas valide";
+            }
+
+        } else {
+
+            $_SESSION['errors'][] = "Veuillez remplir tous les champs";
+    
+        }
     }
 ?>
 <!DOCTYPE html>
@@ -37,40 +64,49 @@
         <h1>Je suis la home</h1>
 
         <h2>Inscrivez-vous !</h2>
+        <p>
+            <?php 
+            
+                foreach($_SESSION['errors'] as $error){
+                    echo $error;
+                }
+            
+            ?>
+        </p>
 
         <div class="formulaire">
 
             <form action="#" method="post">
                 <p>
                     <label for="name">Prénom</label>
-                    <input type="text" name="name" id="name">
+                    <input type="text" name="name" id="name" value="<?php if(!empty($_POST['name'])){echo $_POST['name'];} ?>">
                 </p>
                 <p>
                     <label for="first_name">Nom</label>
-                    <input type="text" name="first_name" id="first_name">
+                    <input type="text" name="first_name" id="first_name" value="<?php if(!empty($_POST['first_name'])){echo $_POST['first_name'];} ?>">
                 </p>
                 <p>
                     <label for="age">Date de naissance</label>
-                    <input type="date" name="age" id="age">
+                    <input type="date" name="age" id="age" value="<?php if(!empty($_POST['age'])){echo $_POST['age'];} ?>">
                 </p>
                 <p>
                     <label for="ville">Ville</label>
-                    <input type="text" name="ville" id="ville">
+                    <input type="text" name="ville" id="ville" value="<?php if(!empty($_POST['ville'])){echo $_POST['ville'];} ?>">
                 </p>
                 <p>
                     <label for="tel">Téléphone</label>
-                    <input type="tel" name="tel" id="tel" pattern="[0-9]{2}-[0-9]{2}-[0-9]{2}-[0-9]{2}-[0-9]{2}">
+                    <input type="tel" name="tel" id="tel" pattern="[0-9]{2}-[0-9]{2}-[0-9]{2}-[0-9]{2}-[0-9]{2}" value="<?php if(!empty($_POST['tel'])){echo $_POST['tel'];} ?>"> 
                 
                     <small>exemple: 02-03-05-08-15</small>
                 </p> 
                 <p>
 
                     <label for="mail">Mail</label>
-                    <input type="email" name="mail" id="mail">
+                    <input type="email" name="mail" id="mail" value="<?php if(!empty($_POST['mail'])){echo $_POST['mail'];} ?>">
                 </p>
                 <p>
                     <label for="pass">Mot de passe</label>
-                    <input type="password" name="pass" id="pass">
+                    <input type="password" name="pass" id="pass" value="<?php if(!empty($_POST['pass'])){echo $_POST['pass'];} ?>"> 
                 </p>
                 <p>
                     <label for="femme">Femme</label>
